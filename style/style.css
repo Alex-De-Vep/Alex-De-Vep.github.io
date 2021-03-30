@@ -1,12 +1,11 @@
 .section {
     width: 100%;
+    height: -webkit-fill-available;
     height: 100vh;
     display: flex;
     align-items: center;
 
     background-color: #cb2c2c;
-
-    height: -webkit-fill-available;
 }
 
 .container {
