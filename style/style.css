@@ -5,6 +5,8 @@
     align-items: center;
 
     background-color: #cb2c2c;
+
+    height: -webkit-fill-available;
 }
 
 .container {
