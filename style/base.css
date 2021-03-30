@@ -1,0 +1,17 @@
+body,
+ul,
+p {
+    margin: 0;
+}
+
+ol,
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+p {
+    font-weight: 600;
+    font-size: 14px;
+    font-family: "Montserrat", sans-serif;
+}
