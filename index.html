@@ -1,78 +1,109 @@
 <!DOCTYPE html>
-<html lang="ru">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
 
-        <link rel="stylesheet" href="style/stylesheet.css">
-        <link rel="stylesheet" href="style/style.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 
-        <title>Title</title>
-    </head>
-    <body>
-        <div style="height: 0; width: 0; position: absolute; left: -99999999px;">
-            <svg>
-                <symbol id="apple" viewBox="0 0 512 512" fill="currentColor">
-	                <path d="M185.255,512c-76.201-0.439-139.233-155.991-139.233-235.21c0-129.404,97.075-157.734,134.487-157.734   c16.86,0,34.863,6.621,50.742,12.48c11.104,4.087,22.588,8.306,28.975,8.306c3.823,0,12.832-3.589,20.786-6.738   c16.963-6.753,38.071-15.146,62.651-15.146c0.044,0,0.103,0,0.146,0c18.354,0,74.004,4.028,107.461,54.272l7.837,11.777   l-11.279,8.511c-16.113,12.158-45.513,34.336-45.513,78.267c0,52.031,33.296,72.041,49.292,81.665   c7.061,4.248,14.37,8.628,14.37,18.208c0,6.255-49.922,140.566-122.417,140.566c-17.739,0-30.278-5.332-41.338-10.034   c-11.191-4.761-20.845-8.862-36.797-8.862c-8.086,0-18.311,3.823-29.136,7.881C221.496,505.73,204.752,512,185.753,512H185.255z"/>
-                    <path d="M351.343,0c1.888,68.076-46.797,115.304-95.425,112.342C247.905,58.015,304.54,0,351.343,0z"/>
-                </symbol>
-                <svg id="shop" viewBox="0 0 398.8 398.8" fill="currentColor">
-                    <path d="M328.6,125.6c-0.8-9.6-4.8-18.4-11.2-24.8c-6.4-6.4-14.8-10.4-24.8-10.4h-21.2V72c0-20-8-38-21.2-50.8
-			        C237,8,219,0,199.4,0c-20,0-38,8-50.8,21.2C135.4,34,127.4,52,127.4,72v18.4h-21.2c-10,0-18.4,4-24.8,10.4
-                    C75,107.2,71,116,70.2,125.6L49,362.4c0,1.2,0,2.4,0,2.8c0,8.8,3.6,17.2,10,23.2c6,5.6,14,9.6,22.4,10.4h0.4c1.2,0,2.4,0,3.2,0
-                    h228.8c0.8,0,2,0,3.2,0c8.8-0.8,16.8-4.8,22.8-10.4c6.4-6,10-14.4,10-23.6c0-0.8,0-1.6,0-2.8L328.6,125.6z M149.4,72
-                    c0-14,5.6-26.4,14.8-35.6c9.2-9.2,21.6-14.8,35.6-14.8s26.4,5.6,35.6,14.8S250.2,58,250.2,72v18.4H149.4V72z M327.4,365.2
-                    c0,3.2-1.2,6-3.6,8c-2.4,2.4-6,4-9.2,4.4c0,0-0.4,0-1.2,0H85c-0.8,0-1.2,0-1.2,0h-0.4c-3.6-0.4-6.8-2-9.2-4.4
-                    c-2.4-2-3.6-4.8-3.6-8V364l21.2-236.4c0.4-4.4,2.4-8.4,5.2-11.2c2.4-2.4,5.6-4,9.2-4h21.2v48.8c0,6,4.8,10.8,10.8,10.8
-                    s10.8-4.8,10.8-10.8v-48.8h100v48.8c0,6,4.8,10.8,10.8,10.8s10.8-4.8,10.8-10.8v-48.8h21.2c3.6,0,6.8,1.6,9.2,4
-                    c2.8,2.8,4.8,6.8,5.2,11.2l21.2,236.8V365.2z"/>
-                </svg>
-            </svg>
+    <title>Shopping List App</title>
+</head>
+<body>
+    <section id="shopping-list" class="section">
+        <div class="container">
+            <div class="app">
+                <div class="header">
+                    <h1 class="header__title">{{header}}</h1>
+                    <button v-if="editing" @click="doEdit(false)" type="button" class="button button_background-color_red">cancel</button>
+                    <button v-else @click="doEdit(true)" type="button" class="button">add item</button>
+                </div>
+                <div class="app__input">
+                    <div v-if="editing" class="input__wrapper">
+                        <input class="input" @keyup.enter="saveItem" v-model="newItem" class="app__input" type="text" placeholder="Enter">
+                        <p class="input__count">{{characterCount}}/200</p>
+                    </div>
+                    <button
+                            v-if="editing"
+                            @click="saveItem"
+                            :disabled="newItem.length === 0"
+                            type="button"
+                            class="button button_background-color_green"
+                    >
+                        save item
+                    </button>
+                </div>
+                <ul class="app__list">
+                    <li v-for="item in reversedItems"
+                        :class="[
+                            item.purchased ? 'strikeout' : '',
+                            'app__item'
+                        ]"
+                        @click="togglePurchased(item)">
+                        {{item.label}}
+                    </li>
+                </ul>
+                <p v-if="items.length === 0">Shopping List is empty</p>
+                <button v-else @click="clearItems" class="button button_background-color_gray">Clear List</button>
+            </div>
+            </div>
         </div>
-        <header class="header">
-            <div class="header__container">
-                <div class="burger">
-                    <span class="burger__line"></span>
-                    <span class="burger__line"></span>
-                </div>
-                <svg class="logo__icon">
-                    <use href="#apple"></use>
-                </svg>
-                <svg class="logo__icon">
-                    <use href="#shop"></use>
-                </svg>
-            </div>
-            <div class="menu disable">
-                <div class="input">
-                    <input class="input__field" placeholder="Search apple.com" type="text">
-                </div>
-                <nav class="nav">
-                    <ul class="nav__list">
-                        <li class="nav__item">
-                            <a class="nav__link" href="">Mac</a>
-                        </li>
-                        <li class="nav__item">
-                            <a class="nav__link" href="">iPad</a>
-                        </li>
-                        <li class="nav__item">
-                            <a class="nav__link" href="">iPhone</a>
-                        </li>
-                        <li class="nav__item">
-                            <a class="nav__link" href="">Watch</a>
-                        </li>
-                        <li class="nav__item">
-                            <a class="nav__link" href="">TV</a>
-                        </li>
-                        <li class="nav__item">
-                            <a class="nav__link" href="">Music</a>
-                        </li>
-                        <li class="nav__item">
-                            <a class="nav__link" href="">Support</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </header>
-    </body>
-    <script src="js/main.js"></script>
+
+    </section>
+    <script src="https://unpkg.com/vue@3"></script>
+    <script>
+        const consoleShop = Vue.createApp({
+            data() {
+                return {
+                    editing: false,
+                    header: 'Shopping List',
+                    newItem: '',
+                    items: [
+                        {
+                            label: '10 party hats',
+                            purchased: false,
+                        },
+                        {
+                            label: '2 board games',
+                            purchased: true,
+                        },
+                        {
+                            label: '20 cups',
+                            purchased: false,
+                        }
+                    ]
+                }
+            },
+            methods: {
+                saveItem() {
+                    this.items.push({
+                        label: this.newItem,
+                        purchased: false
+                    });
+                    this.newItem = '';
+                },
+                doEdit(editing) {
+                    this.editing = editing;
+                    this.newItem = '';
+                },
+                togglePurchased(item) {
+                    item.purchased = !item.purchased;
+                },
+                clearItems() {
+                    this.items.splice(0);
+                }
+            },
+            computed: {
+                characterCount() {
+                    return this.newItem.length;
+                },
+                reversedItems() {
+                    return [...this.items].reverse();
+                }
+            }
+        })
+
+        .mount('#shopping-list')
+    </script>
+</body>
 </html>
